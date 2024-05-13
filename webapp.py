@@ -73,6 +73,7 @@ max_rev_len = config['max_rev_len']
 
 nltk.download('stopwords', quiet=True)
 nltk.download('wordnet', quiet=True)
+nltk.download('punkt', quiet=True)
 tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 def clean_reviews(review):
 
