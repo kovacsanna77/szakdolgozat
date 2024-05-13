@@ -43,18 +43,37 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 base_dir = 'model.h5'
 tokenizer_path = 'tokenizer.pkl'
-tok = joblib.load(tokenizer_path)
+# Check if the file exists
+if not os.path.exists(tokenizer_path):
+    raise FileNotFoundError(f"Tokenizer file not found at path: {tokenizer_path}")
+
+try:
+    # Load the tokenizer
+    tok = joblib.load(tokenizer_path)
+    print("Tokenizer loaded successfully.")
+except Exception as e:
+    print(f"An error occurred while loading the tokenizer: {e}")
 
 # Load the configuration
-config = json.load('config.json')
+config_path = 'config.json'
+if not os.path.exists(config_path):
+    raise FileNotFoundError(f"Config file not found at path: {config_path}")
+
+try:
+    with open(config_path, 'r') as config_file:
+        config = json.load(config_file)
+    print("Config loaded successfully.")
+except Exception as e:
+    print(f"An error occurred while loading the config: {e}")
 
 # Extract max_rev_len
 max_rev_len = config['max_rev_len']
 
 # function to clean and pre-process the text.
 
-nltk.download('stopwords')
-nltk.download('wordnet')
+nltk.download('stopwords', quiet=True)
+nltk.download('wordnet', quiet=True)
+nltk.download('punkt', quiet=True)
 tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 def clean_reviews(review):
 
@@ -135,11 +154,11 @@ bert = BertModel.from_pretrained("bert-base-uncased")
 save_directory = 'bert'
 tokenizerbert = AutoTokenizer.from_pretrained(save_directory)
 
-model_path = 'bert/saved_weights_lstm.pt' #os.path.join(save_directory, 'saved_weights_lstm.pt')
+model2_path = 'saved_weights_lstm.pt' #os.path.join(save_directory, 'saved_weights_lstm.pt')
 model_bert = BERT_LSTM_Arch(bert)  # Initialize the model with the same architecture
 
 # Load the model weights
-model_bert.load_state_dict(torch.load(model_path))
+model_bert.load_state_dict(torch.load(model2_path))
 model_bert.eval()
 
 def pred_bert(text):
