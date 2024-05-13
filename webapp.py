@@ -237,7 +237,7 @@ def predict_label(text, model_choice):
 
 if __name__ == '__main__':
     st.title("Fake news detection")
-    models = ['BiLSTM', 'BERT']
+    models = ['BERT']
     chosen_model = st.selectbox('Choose a model', models)
     text = st.text_input('Enter text for prediction')
 
