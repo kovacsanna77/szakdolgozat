@@ -91,6 +91,7 @@ try:
 except Exception as e:
     print(f"An error occurred while loading the config: {e}")
 
+
 # Extract max_rev_len
 max_rev_len = config['max_rev_len']
 # Load the embedding matrix
@@ -105,8 +106,13 @@ vocab_size = embed_matrix.shape[0]
 embed_dim = embed_matrix.shape[1]
  # Define max_rev_len based on your data
 
-model = model_from_json(model_json)
-model.layers[0].set_weights([embed_matrix])
+# Reconstruct the model
+model = Sequential()
+model.add(Embedding(input_dim=vocab_size, output_dim=embed_dim, input_length=max_rev_len, weights=[embed_matrix], trainable=True))
+model.add(Bidirectional(LSTM(64, dropout=0.2)))
+model.add(Dense(64, activation='relu'))
+model.add(Dropout(0.1))
+model.add(Dense(1, activation='sigmoid'))
 
 # Compile the model
 model.compile(optimizer=SGD(), loss=BinaryCrossentropy(), metrics=['accuracy'])
