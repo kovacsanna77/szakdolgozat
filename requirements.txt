@@ -1,8 +1,6 @@
 matplotlib
 torch
 pandas
-seaborn
-opencv-python
 nltk
 streamlit
 numpy
