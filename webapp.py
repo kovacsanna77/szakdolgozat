@@ -91,7 +91,7 @@ def predict_label(text, model_choice):
     return 1
 
 if __name__ == '__main__':
-  st.title("Movie Genre classification")
+  st.title("Fake news detection")
   models = ['BiLSTM', 'BERT-LSTM']
   initial_text=" . "
   text = st.text_area("Insert the text to predict", initial_text)
