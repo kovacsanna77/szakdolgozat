@@ -33,6 +33,10 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import sequence 
 from tensorflow.keras.initializers import Orthogonal
+from tensorflow.keras.initializers import Constant
+from tensorflow.keras.layers import ReLU, Dropout, Bidirectional, LSTM, Embedding, Dense
+from tensorflow.keras.losses import BinaryCrossentropy
+from tensorflow.keras.optimizers import SGD
 from transformers import AutoTokenizer
 from transformers import BertModel
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -93,8 +97,15 @@ def clean_reviews(review):
     return cleaned_review
     
 # Load LSTM model once
+custom_objects = {
+    'Constant': Constant,
+    'ReLU': ReLU,
+    'BinaryCrossentropy': BinaryCrossentropy,
+    'Dropout': Dropout,
+    'SGD': SGD
+}
 base_dir = 'model.h5'
-model = load_model(base_dir)
+model = load_model(base_dir, custom_objects=custom_objects)
 def pred_lstm(text):
    
     sentences = tokenizer.tokenize(text.strip())
