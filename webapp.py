@@ -42,11 +42,8 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 base_dir = 'model.h5'
-import joblib
-import os
 
 # Check if the file exists
-tokenizer_path = 'tokenizer.pkl'
 if not os.path.exists(tokenizer_path):
     raise FileNotFoundError(f"Tokenizer file not found at path: {tokenizer_path}")
 
@@ -57,9 +54,17 @@ try:
 except Exception as e:
     print(f"An error occurred while loading the tokenizer: {e}")
 
-
 # Load the configuration
-config = json.load('config.json')
+config_path = 'config.json'
+if not os.path.exists(config_path):
+    raise FileNotFoundError(f"Config file not found at path: {config_path}")
+
+try:
+    with open(config_path, 'r') as config_file:
+        config = json.load(config_file)
+    print("Config loaded successfully.")
+except Exception as e:
+    print(f"An error occurred while loading the config: {e}")
 
 # Extract max_rev_len
 max_rev_len = config['max_rev_len']
