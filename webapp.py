@@ -22,10 +22,6 @@ from tensorflow.keras.models import load_model
 #stop-words
 
 
-
-from google.colab import drive
-drive.mount('/content/drive')
-
 """### LSTM"""
 
 base_dir = 'model.h5'
