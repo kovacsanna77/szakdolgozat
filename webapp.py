@@ -18,8 +18,8 @@ from nltk.stem import WordNetLemmatizer
 import numpy as np
 import pandas as pd
 import os
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import load_model
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
