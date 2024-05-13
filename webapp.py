@@ -159,38 +159,30 @@ model_bert.load_state_dict(torch.load(model2_path))
 model_bert.eval()
 
 def pred_bert(text):
-
-
-    encoded_input = tokenizerbert.encode_plus(
+encoded_input = tokenizerbert.encode_plus(
         text,
         add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
         return_attention_mask=True,
-        padding='max_length',      # Pad to a length specified by the max_length
+        padding='max_length',     # Pad to a length specified by the max_length
         truncation=True,
-        max_length=512,            # Truncate or pad to a max_length specified by the model used
-        return_tensors='pt'        # Return PyTorch tensors
+        max_length=512,           # Truncate or pad to a max_length specified by the model used
+        return_tensors='pt'       # Return PyTorch tensors
     )
 
-    # Extract inputs and attention masks
     input_ids = encoded_input['input_ids']
-    attention_masks = encoded_input['attention_mask']
+    attention_mask = encoded_input['attention_mask']
 
-    # Load the model
-    model2 = model_bert
-    #model2.load_state_dict(torch.load('saved_weights_lstm.pt'))
-    model2.eval()
-
-    # Put model in evaluation mode
-    model2 = model2.to(device)  # device can be "cpu" or "cuda"
+    # Move tensors to the same device as the model
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model_bert.to(device)
     input_ids = input_ids.to(device)
-    attention_masks = attention_masks.to(device)
+    attention_mask = attention_mask.to(device)
 
     # Make prediction
     with torch.no_grad():
-        outputs = model(input_ids, attention_masks)
+        outputs = model_bert(input_ids, attention_mask)
         predictions = torch.argmax(outputs, dim=1)
 
-    # Convert prediction index to corresponding class
     predicted_class = predictions.cpu().numpy()[0]
 
     return predicted_class
@@ -201,29 +193,22 @@ A = "Israeli officials are reeling after US President Joe Biden's declaration th
 
 #print(pred_bert(A))
 
-
 def predict_label(text, model_choice):
-
-  if model_choice =='BiLSTM':
-    return pred_lstm(text)
-
-  elif model_choice =='BERT':
-    return pred_bert(text)
+    if model_choice == 'BiLSTM':
+        return pred_lstm(text)
+    elif model_choice == 'BERT':
+        return pred_bert(text)
+    else:
+        raise ValueError(f"Unknown model choice: {model_choice}")
 
 if __name__ == '__main__':
-  st.title("Fake news detection")
-  models = ['BiLSTM', 'BERT-LSTM']
-  initial_text=" insert the text here "
-  text = st.text_area("Insert the text to predict", initial_text)
+    st.title("Fake news detection")
+    models = ['BiLSTM', 'BERT']
+    chosen_model = st.selectbox('Choose a model', models)
+    text = st.text_input('Enter text for prediction')
 
-  chosen_model = st.radio('Select a model to predict', models)
+    if st.button('Predict'):
+        result = predict_label(text, chosen_model)
+        st.success(f"Prediction: {'True' if result == 1 else 'False'}")
 
-
-  if st.button('Predict'):
-
-    if chosen_model == models[0]:
-      result = predict_label(text, models[0])
-      st.success("Prediction: ", 'True' if result == 1 else 'False')
-    elif chosen_model == models[1]:
-      result = predict_label(text, models[1])
-      st.success(f"Prediction: ", 'True' if result == 1 else 'False') # át kellene alakítani még szöveggé
+  
