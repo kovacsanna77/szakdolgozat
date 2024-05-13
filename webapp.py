@@ -104,18 +104,20 @@ with open('model.json', 'r') as json_file:
 # Reconstruct the model
 vocab_size = embed_matrix.shape[0]
 embed_dim = embed_matrix.shape[1]
- # Define max_rev_len based on your data
+
 
 # Reconstruct the model
-model = Sequential()
-model.add(Embedding(input_dim=vocab_size, output_dim=embed_dim, input_length=max_rev_len, weights=[embed_matrix], trainable=True))
-model.add(Bidirectional(LSTM(64, dropout=0.2)))
-model.add(Dense(64, activation='relu'))
+model=Sequential()
+model.add(Embedding(input_dim=vocab_size, output_dim=embed_dim,
+                    input_length=max_rev_len, weights=[embed_matrix],
+                    trainable=True))
+model.add(Bidirectional(LSTM(64, dropout = 0.2)))
+model.add(Dense(64, activation = 'relu'))
 model.add(Dropout(0.1))
 model.add(Dense(1, activation='sigmoid'))
 
-# Compile the model
-model.compile(optimizer=SGD(), loss=BinaryCrossentropy(), metrics=['accuracy'])
+# compile the model
+model.compile(optimizer= SGD(), loss=BinaryCrossentropy(), metrics=['accuracy'])
 
 # Load the model weights
 model.load_weights('model_weights.h5')
