@@ -109,7 +109,7 @@ model = model_from_json(model_json)
 model.layers[0].set_weights([embed_matrix])
 
 # Compile the model
-model.compile(optimizer='SGD', loss=BinaryCrossentropy(), metrics=['accuracy'])
+model.compile(optimizer=SGD(), loss=BinaryCrossentropy(), metrics=['accuracy'])
 
 # Load the model weights
 model.load_weights('model_weights.h5')
