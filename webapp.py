@@ -90,11 +90,12 @@ def clean_reviews(review):
 
     cleaned_review=" ".join(word_tokens)
     return cleaned_review
-
-def pred_lstm(text):
-
-    model = load_model(base_dir)
     
+# Load LSTM model once
+base_dir = 'model.h5'
+model_lstm = load_model(base_dir, custom_objects={'Orthogonal': Orthogonal})
+def pred_lstm(text):
+   
     sentences = tokenizer.tokenize(text.strip())
     cleaned_sentences = [clean_reviews(sent).split() for sent in sentences]
     sequences = tok.texts_to_sequences(cleaned_sentences)
@@ -158,6 +159,8 @@ model_bert = BERT_LSTM_Arch(bert)  # Initialize the model with the same architec
 # Load the model weights
 model_bert.load_state_dict(torch.load(model2_path))
 model_bert.eval()
+
+
 
 def pred_bert(text):
     encoded_input = tokenizerbert.encode_plus(
