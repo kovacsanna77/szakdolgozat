@@ -71,8 +71,8 @@ max_rev_len = config['max_rev_len']
 
 # function to clean and pre-process the text.
 
-nltk.download('stopwords')
-nltk.download('wordnet')
+nltk.download('stopwords', quiet=True)
+nltk.download('wordnet', quiet=True)
 tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 def clean_reviews(review):
 
