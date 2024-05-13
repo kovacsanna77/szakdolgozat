@@ -7,6 +7,8 @@ Original file is located at
     https://colab.research.google.com/drive/1cwBDCCZhtgjcOkeNQSqb-LoDSwDDOo2b
 """
 
+!pip install streamlit
+
 import streamlit as st
 import pickle
 import nltk
@@ -16,22 +18,25 @@ from nltk.stem import WordNetLemmatizer
 import numpy as np
 import pandas as pd
 import os
-import joblib
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.preprocessing.sequence import pad_sequences
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import load_model
-#stop-words
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+from google.colab import drive
+drive.mount('/content/drive')
 
 """### LSTM"""
 
-base_dir = 'model.h5'
-tokenizer_path = 'tokenizer.pkl'
+import json
+
+base_dir = '/content/drive/My Drive/LSTMModelFiles/model.h5'
+tokenizer_path = '/content/drive/My Drive/LSTMModelFiles/tokenizer.pkl'
 with open(tokenizer_path, 'rb') as f:
-    tokenizer = pickle.load(f)
+    tok = pickle.load(f)
 
 # Path to the configuration JSON file
-config_path = 'config.json'
+config_path = '/content/drive/My Drive/LSTMModelFiles/config.json'
 
 # Load the configuration
 with open(config_path) as json_file:
@@ -40,11 +45,14 @@ with open(config_path) as json_file:
 # Extract max_rev_len
 max_rev_len = config['max_rev_len']
 
-nltk.download('stopwords')
-#stop_words = stopwords.words('english')
-
 # function to clean and pre-process the text.
 from bs4 import BeautifulSoup
+import re
+import itertools
+from nltk.tokenize import word_tokenize
+nltk.download('stopwords')
+nltk.download('wordnet')
+tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 def clean_reviews(review):
 
     # 1. Removing html tags
@@ -66,7 +74,7 @@ def clean_reviews(review):
 
 def pred_lstm(text):
 
-  model = load_model(model_path)
+  model = load_model(base_dir)
 
   sentences = tokenizer.tokenize(text.strip())
   cleaned_sentences = [clean_reviews(sent).split() for sent in sentences]
@@ -77,9 +85,108 @@ def pred_lstm(text):
   predicted_class = (predictions > 0.5).astype(int)  # Binary classification model
   return predicted_class[0]
 
+import torch
+from transformers import BertTokenizer
+from torch.utils.data import TensorDataset, DataLoader, SequentialSampler
+
+import torch.nn as nn
+
+class BERT_LSTM_Arch(nn.Module):
+    def __init__(self, bert):
+        super(BERT_LSTM_Arch, self).__init__()
+        self.bert = bert
+
+        # LSTM layer
+        self.lstm = nn.LSTM(input_size=768, hidden_size=256, num_layers=1, batch_first=True, bidirectional=True)
+
+        # Dropout layer
+        self.dropout = nn.Dropout(0.25)
+
+        # Relu activation function
+        self.relu = nn.ReLU()
+        self.sigmoid= nn.Sigmoid()
+        self.fc2 = nn.Linear(512, 256)
+        # Fully connected layer
+        self.fc = nn.Linear(256, 2)
+
+    def forward(self, sent_id, mask):
+        # Passing the inputs to the model
+        outputs = self.bert(sent_id, attention_mask=mask, return_dict=True)
+        sequence_output = outputs.last_hidden_state
+
+        # LSTM over the sequence
+        lstm_output, (hidden, cell) = self.lstm(sequence_output)
+
+        # Using the hidden state of the last time step
+        lstm_output = torch.cat((hidden[-2,:,:], hidden[-1,:,:]), dim=1)
+
+        x = self.fc2(lstm_output)
+        x = self.relu(x)
+        x = self.dropout(x)
+
+        x = self.fc(x)
+        x = self.sigmoid(x)
+
+        return x
+
+from transformers import AutoTokenizer
+from transformers import BertModel
+
+# Load a pretrained BERT model
+bert = BertModel.from_pretrained("bert-base-uncased")
+
+save_directory = '/content/drive/My Drive/BERTModelFiles/'
+tokenizerbert = AutoTokenizer.from_pretrained(save_directory)
+
+model_path = '/content/drive/My Drive/BERTModelFiles/saved_weights_lstm.pt' #os.path.join(save_directory, 'saved_weights_lstm.pt')
+model_bert = BERT_LSTM_Arch(bert)  # Initialize the model with the same architecture
+
+# Load the model weights
+model_bert.load_state_dict(torch.load(model_path))
+model_bert.eval()
+
+def pred_bert(text):
 
 
+    encoded_input = tokenizerbert.encode_plus(
+        text,
+        add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
+        return_attention_mask=True,
+        padding='max_length',      # Pad to a length specified by the max_length
+        truncation=True,
+        max_length=512,            # Truncate or pad to a max_length specified by the model used
+        return_tensors='pt'        # Return PyTorch tensors
+    )
 
+    # Extract inputs and attention masks
+    input_ids = encoded_input['input_ids']
+    attention_masks = encoded_input['attention_mask']
+
+    # Load the model
+    model2 = model_bert
+    #model2.load_state_dict(torch.load('saved_weights_lstm.pt'))
+    model2.eval()
+
+    # Put model in evaluation mode
+    model2 = model2.to(device)  # device can be "cpu" or "cuda"
+    input_ids = input_ids.to(device)
+    attention_masks = attention_masks.to(device)
+
+    # Make prediction
+    with torch.no_grad():
+        outputs = model(input_ids, attention_masks)
+        predictions = torch.argmax(outputs, dim=1)
+
+    # Convert prediction index to corresponding class
+    predicted_class = predictions.cpu().numpy()[0]
+
+    return predicted_class
+
+B = "Tensions soared as Biden threatened to withhold toy shipments to Israel's sandcastles if they dared storm Rafah. Israeli bigwigs flailed, Erdan wailed about emboldened foes, while Netanyahu flexed with a we'll stand alone video montage. Bidens jab rocked Israels war boat, prompting cries of Not fair! from Likuds Zohar and a Hamas loves Biden diss from Ben Gvir, causing Herzog to roll his eyes. Lapid finger-pointed at Netanyahu, warning of IDF soldier jeopardy, while Michaeli accused the government of turning Israel into a strategic sitting duck."
+A = "Israeli officials are reeling after US President Joe Biden's declaration that the US would cease some arms shipments if Israel launched a full-scale operation in Rafah. The statement, made in an interview with CNN, ignited criticism from Israeli Ambassador Gilad Erdan, who deemed it potentially emboldening to Israel's enemies. Prime Minister Benjamin Netanyahu responded by affirming Israel's resolve. Biden's stance underscores a shift in US-Israel relations amidst mounting pressure to protect Gazan civilians. Despite pleas to reconsider military plans, Israel has undertaken limited operations. Biden's move has stoked anger among Israeli politicians, exposing deep rifts. Likud Minister Miki Zohar decried forgetting past terror attacks, while Minister of National Security Itamar Ben Gvir's critique prompted President Isaac Herzog's rebuke. "
+
+
+#print(pred_bert(A))
 
 """###UI"""
 
@@ -89,10 +196,10 @@ def predict_label(text, model_choice):
     return pred_lstm(text)
 
   elif model_choice =='BERT':
-    return 1
+    return pred_bert(text)
 
 if __name__ == '__main__':
-  st.title("Fake news detection")
+  st.title("Movie Genre classification")
   models = ['BiLSTM', 'BERT-LSTM']
   initial_text=" . "
   text = st.text_area("Insert the text to predict", initial_text)
@@ -103,8 +210,8 @@ if __name__ == '__main__':
   if st.button('Predict'):
 
     if chosen_model == models[0]:
-      predicted = predict_label(text, models[0])
+      result = predict_label(text, models[0])
       st.success("Prediction: ", 'True' if result == 1 else 'False')
     elif chosen_model == models[1]:
-      predicted = predict_genre(text, models[0])
-      st.success(f"Predicted genres: ", predicted) # át kellene alakítani még szöveggé
+      result = predict_label(text, models[1])
+      st.success(f"Prediction: ", 'True' if result == 1 else 'False') # át kellene alakítani még szöveggé
