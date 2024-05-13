@@ -11,5 +11,5 @@ tensorflow
 transformers
 keras
 joblib
-
+bs4
 
