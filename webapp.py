@@ -29,11 +29,11 @@ drive.mount('/content/drive')
 """### LSTM"""
 
 import json
-
-base_dir = '/content/drive/My Drive/LSTMModelFiles/model.h5'
-tokenizer_path = '/content/drive/My Drive/LSTMModelFiles/tokenizer.pkl'
+import joblib
+base_dir = 'lstm/model.h5'
+tokenizer_path = 'lstm/tokenizer.pkl'
 with open(tokenizer_path, 'rb') as f:
-    tok = pickle.load(f)
+    tok = joblib.load(f)
 
 # Path to the configuration JSON file
 config_path = '/content/drive/My Drive/LSTMModelFiles/config.json'
@@ -135,10 +135,10 @@ from transformers import BertModel
 # Load a pretrained BERT model
 bert = BertModel.from_pretrained("bert-base-uncased")
 
-save_directory = '/content/drive/My Drive/BERTModelFiles/'
+save_directory = 'bert'
 tokenizerbert = AutoTokenizer.from_pretrained(save_directory)
 
-model_path = '/content/drive/My Drive/BERTModelFiles/saved_weights_lstm.pt' #os.path.join(save_directory, 'saved_weights_lstm.pt')
+model_path = 'bert/saved_weights_lstm.pt' #os.path.join(save_directory, 'saved_weights_lstm.pt')
 model_bert = BERT_LSTM_Arch(bert)  # Initialize the model with the same architecture
 
 # Load the model weights
