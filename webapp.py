@@ -37,9 +37,6 @@ from transformers import BertModel
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-"""### LSTM"""
-
-
 
 base_dir = 'model.h5'
 tokenizer_path = 'tokenizer.pkl'
@@ -204,7 +201,6 @@ A = "Israeli officials are reeling after US President Joe Biden's declaration th
 
 #print(pred_bert(A))
 
-"""###UI"""
 
 def predict_label(text, model_choice):
 
@@ -215,9 +211,9 @@ def predict_label(text, model_choice):
     return pred_bert(text)
 
 if __name__ == '__main__':
-  st.title("Movie Genre classification")
+  st.title("Fake news detection")
   models = ['BiLSTM', 'BERT-LSTM']
-  initial_text=" . "
+  initial_text=" insert the text here "
   text = st.text_area("Insert the text to predict", initial_text)
 
   chosen_model = st.radio('Select a model to predict', models)
