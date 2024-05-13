@@ -42,7 +42,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 base_dir = 'model.h5'
-
+tokenizer_path = 'tokenizer.pkl'
 # Check if the file exists
 if not os.path.exists(tokenizer_path):
     raise FileNotFoundError(f"Tokenizer file not found at path: {tokenizer_path}")
