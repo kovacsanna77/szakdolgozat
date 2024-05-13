@@ -28,7 +28,7 @@ from tensorflow.keras.models import load_model
 base_dir = 'model.h5'
 tokenizer_path = 'tokenizer.pkl'
 with open(tokenizer_path, 'rb') as f:
-    tokenizer = joblib.load(f)
+    tokenizer = pickle.load(f)
 
 # Path to the configuration JSON file
 config_path = 'config.json'
