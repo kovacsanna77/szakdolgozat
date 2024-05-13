@@ -94,7 +94,7 @@ def clean_reviews(review):
     
 # Load LSTM model once
 base_dir = 'model.h5'
-model_lstm = load_model(base_dir)
+model = load_model(base_dir)
 def pred_lstm(text):
    
     sentences = tokenizer.tokenize(text.strip())
