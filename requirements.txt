@@ -7,5 +7,5 @@ numpy
 scikit-learn
 tensorflow
 transformers
-kreas
+keras
 
