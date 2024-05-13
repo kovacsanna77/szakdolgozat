@@ -12,4 +12,4 @@ transformers
 keras
 joblib
 bs4
-
+BeautifulSoup
