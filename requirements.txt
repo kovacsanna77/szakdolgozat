@@ -9,4 +9,5 @@ tensorflow
 transformers
 joblib
 bs4
+json
 
