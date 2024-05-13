@@ -33,10 +33,36 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import sequence 
 from tensorflow.keras.initializers import Orthogonal
+from tensorflow.keras.initializers import Constant
+from tensorflow.keras.layers import ReLU, Dropout, Bidirectional, LSTM, Embedding, Dense
+from tensorflow.keras.losses import BinaryCrossentropy
+from tensorflow.keras.optimizers import SGD
 from transformers import AutoTokenizer
 from transformers import BertModel
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+nltk.download('stopwords', quiet=True)
+nltk.download('wordnet', quiet=True)
+nltk.download('punkt', quiet=True)
+tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 
+def clean_reviews(review):
+
+    # 1. Removing html tags
+    review_text = BeautifulSoup(review,"lxml").get_text()
+
+    # 2. Retaining only alphabets.
+    review_text = re.sub("[^a-zA-Z]"," ",review_text)
+
+    # 3. Converting to lower case and splitting
+    word_tokens= review_text.lower().split()
+
+    # 4. Remove stopwords
+    le=WordNetLemmatizer()
+    stop_words= set(stopwords.words("english"))
+    word_tokens= [le.lemmatize(w) for w in word_tokens if not w in stop_words]
+
+    cleaned_review=" ".join(word_tokens)
+    return cleaned_review
 
 
 base_dir = 'model.h5'
@@ -66,35 +92,29 @@ except Exception as e:
 
 # Extract max_rev_len
 max_rev_len = config['max_rev_len']
+# Load the embedding matrix
+embed_matrix = np.load('embed_matrix.npy')
 
-# function to clean and pre-process the text.
+# Load the model architecture
+with open('model.json', 'r') as json_file:
+    model_json = json_file.read()
 
-nltk.download('stopwords', quiet=True)
-nltk.download('wordnet', quiet=True)
-nltk.download('punkt', quiet=True)
-tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
-def clean_reviews(review):
+# Reconstruct the model
+vocab_size = embed_matrix.shape[0]
+embed_dim = embed_matrix.shape[1]
+ # Define max_rev_len based on your data
 
-    # 1. Removing html tags
-    review_text = BeautifulSoup(review,"lxml").get_text()
+model = model_from_json(model_json)
+model.layers[0].set_weights([embed_matrix])
 
-    # 2. Retaining only alphabets.
-    review_text = re.sub("[^a-zA-Z]"," ",review_text)
+# Compile the model
+model.compile(optimizer='SGD', loss=BinaryCrossentropy(), metrics=['accuracy'])
 
-    # 3. Converting to lower case and splitting
-    word_tokens= review_text.lower().split()
-
-    # 4. Remove stopwords
-    le=WordNetLemmatizer()
-    stop_words= set(stopwords.words("english"))
-    word_tokens= [le.lemmatize(w) for w in word_tokens if not w in stop_words]
-
-    cleaned_review=" ".join(word_tokens)
-    return cleaned_review
-    
-# Load LSTM model once
-base_dir = 'model.h5'
-model = load_model(base_dir)
+# Load the model weights
+model.load_weights('model_weights.h5')
+   
+#base_dir = 'model.h5'
+#model = load_model(base_dir, custom_objects=custom_objects)
 def pred_lstm(text):
    
     sentences = tokenizer.tokenize(text.strip())
