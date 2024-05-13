@@ -8,6 +8,6 @@ scikit-learn
 tensorflow
 transformers
 keras
-pickle
+
 
 
