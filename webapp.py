@@ -10,26 +10,36 @@ Original file is located at
 #!pip install streamlit
 
 import streamlit as st
+import torch
+from transformers import BertTokenizer
+from torch.utils.data import TensorDataset, DataLoader, SequentialSampler
+import torch.nn as nn
+import joblib
+import json
 import pickle
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
+from bs4 import BeautifulSoup
+import re
+import itertools
+from nltk.tokenize import word_tokenize
 import numpy as np
 import pandas as pd
 import os
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import load_model
+from transformers import AutoTokenizer
+from transformers import BertModel
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-from google.colab import drive
-drive.mount('/content/drive')
 
 """### LSTM"""
 
-import json
-import joblib
+
+
 base_dir = 'lstm/model.h5'
 tokenizer_path = 'lstm/tokenizer.pkl'
 with open(tokenizer_path, 'rb') as f:
@@ -46,10 +56,7 @@ with open(config_path) as json_file:
 max_rev_len = config['max_rev_len']
 
 # function to clean and pre-process the text.
-from bs4 import BeautifulSoup
-import re
-import itertools
-from nltk.tokenize import word_tokenize
+
 nltk.download('stopwords')
 nltk.download('wordnet')
 tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
@@ -85,11 +92,7 @@ def pred_lstm(text):
   predicted_class = (predictions > 0.5).astype(int)  # Binary classification model
   return predicted_class[0]
 
-import torch
-from transformers import BertTokenizer
-from torch.utils.data import TensorDataset, DataLoader, SequentialSampler
 
-import torch.nn as nn
 
 class BERT_LSTM_Arch(nn.Module):
     def __init__(self, bert):
@@ -129,8 +132,6 @@ class BERT_LSTM_Arch(nn.Module):
 
         return x
 
-from transformers import AutoTokenizer
-from transformers import BertModel
 
 # Load a pretrained BERT model
 bert = BertModel.from_pretrained("bert-base-uncased")
