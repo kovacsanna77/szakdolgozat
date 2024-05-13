@@ -40,17 +40,12 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 
-base_dir = 'lstm/model.h5'
-tokenizer_path = 'lstm/tokenizer.pkl'
-with open(tokenizer_path, 'rb') as f:
-    tok = joblib.load(f)
-
-# Path to the configuration JSON file
-config_path = '/content/drive/My Drive/LSTMModelFiles/config.json'
+base_dir = 'model.h5'
+tokenizer_path = 'tokenizer.pkl'
+tok = joblib.load(tokenizer_path)
 
 # Load the configuration
-with open(config_path) as json_file:
-    config = json.load(json_file)
+config = json.load('config.json')
 
 # Extract max_rev_len
 max_rev_len = config['max_rev_len']
