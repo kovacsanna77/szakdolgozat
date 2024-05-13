@@ -16,6 +16,7 @@ from nltk.stem import WordNetLemmatizer
 import numpy as np
 import pandas as pd
 import os
+import joblib
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import load_model
@@ -27,7 +28,7 @@ from tensorflow.keras.models import load_model
 base_dir = 'model.h5'
 tokenizer_path = 'tokenizer.pkl'
 with open(tokenizer_path, 'rb') as f:
-    tokenizer = pickle.load(f)
+    tokenizer = joblib.load(f)
 
 # Path to the configuration JSON file
 config_path = 'config.json'
@@ -40,7 +41,7 @@ with open(config_path) as json_file:
 max_rev_len = config['max_rev_len']
 
 nltk.download('stopwords')
-stop_words = stopwords.words('english')
+#stop_words = stopwords.words('english')
 
 # function to clean and pre-process the text.
 from bs4 import BeautifulSoup
