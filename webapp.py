@@ -93,16 +93,17 @@ def clean_reviews(review):
 
 def pred_lstm(text):
 
-  model = load_model(base_dir)
-
-  sentences = tokenizer.tokenize(text.strip())
-  cleaned_sentences = [clean_reviews(sent).split() for sent in sentences]
-  sequences = tok.texts_to_sequences(cleaned_sentences)
-  flattened_sequence = list(itertools.chain(*sequences))
-  padded_sequences = pad_sequences([flattened_sequence], maxlen=max_rev_len, padding='post')
-  predictions = model.predict(padded_sequences)
-  predicted_class = (predictions > 0.5).astype(int)  # Binary classification model
-  return predicted_class[0]
+    model = load_model(base_dir)
+    
+    sentences = tokenizer.tokenize(text.strip())
+    cleaned_sentences = [clean_reviews(sent).split() for sent in sentences]
+    sequences = tok.texts_to_sequences(cleaned_sentences)
+    flattened_sequence = list(itertools.chain(*sequences))
+    padded_sequences = pad_sequences([flattened_sequence], maxlen=max_rev_len, padding='post')
+    predictions = model.predict(padded_sequences)
+    predicted_class = (predictions > 0.5).astype(int)  
+    
+    return predicted_class[0]
 
 
 
