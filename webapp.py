@@ -43,7 +43,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 base_dir = 'model.h5'
 tokenizer_path = 'tokenizer.pkl'
-tok = joblib.load(tokenizer_path)
+tok = joblib.load('tokenizer.pkl')
 
 # Load the configuration
 config = json.load('config.json')
