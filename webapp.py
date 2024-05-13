@@ -42,8 +42,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 base_dir = 'lstm/model.h5'
 tokenizer_path = 'lstm/tokenizer.pkl'
-with open(tokenizer_path, 'rb') as f:
-    tok = joblib.load(f)
+tok = joblib.load(tokenizer_path)
 
 # Path to the configuration JSON file
 config_path = '/content/drive/My Drive/LSTMModelFiles/config.json'
