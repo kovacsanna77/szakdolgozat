@@ -20,7 +20,9 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import load_model
 #stop-words
-stop_words=set(nltk.corpus.stopwords.words('english'))
+nltk.download('stopwords')
+stop_words = stopwords.words('english')
+
 
 from google.colab import drive
 drive.mount('/content/drive')
