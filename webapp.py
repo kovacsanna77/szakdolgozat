@@ -154,11 +154,11 @@ bert = BertModel.from_pretrained("bert-base-uncased")
 save_directory = 'bert'
 tokenizerbert = AutoTokenizer.from_pretrained(save_directory)
 
-model_path = 'bert/saved_weights_lstm.pt' #os.path.join(save_directory, 'saved_weights_lstm.pt')
+model2_path = 'saved_weights_lstm.pt' #os.path.join(save_directory, 'saved_weights_lstm.pt')
 model_bert = BERT_LSTM_Arch(bert)  # Initialize the model with the same architecture
 
 # Load the model weights
-model_bert.load_state_dict(torch.load(model_path))
+model_bert.load_state_dict(torch.load(model2_path))
 model_bert.eval()
 
 def pred_bert(text):
