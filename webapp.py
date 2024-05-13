@@ -159,15 +159,15 @@ model_bert.load_state_dict(torch.load(model2_path))
 model_bert.eval()
 
 def pred_bert(text):
-encoded_input = tokenizerbert.encode_plus(
-        text,
-        add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
-        return_attention_mask=True,
-        padding='max_length',     # Pad to a length specified by the max_length
-        truncation=True,
-        max_length=512,           # Truncate or pad to a max_length specified by the model used
-        return_tensors='pt'       # Return PyTorch tensors
-    )
+    encoded_input = tokenizerbert.encode_plus(
+            text,
+            add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
+            return_attention_mask=True,
+            padding='max_length',     # Pad to a length specified by the max_length
+            truncation=True,
+            max_length=512,           # Truncate or pad to a max_length specified by the model used
+            return_tensors='pt'       # Return PyTorch tensors
+        )
 
     input_ids = encoded_input['input_ids']
     attention_mask = encoded_input['attention_mask']
@@ -187,8 +187,8 @@ encoded_input = tokenizerbert.encode_plus(
 
     return predicted_class
 
-B = "Tensions soared as Biden threatened to withhold toy shipments to Israel's sandcastles if they dared storm Rafah. Israeli bigwigs flailed, Erdan wailed about emboldened foes, while Netanyahu flexed with a we'll stand alone video montage. Bidens jab rocked Israels war boat, prompting cries of Not fair! from Likuds Zohar and a Hamas loves Biden diss from Ben Gvir, causing Herzog to roll his eyes. Lapid finger-pointed at Netanyahu, warning of IDF soldier jeopardy, while Michaeli accused the government of turning Israel into a strategic sitting duck."
-A = "Israeli officials are reeling after US President Joe Biden's declaration that the US would cease some arms shipments if Israel launched a full-scale operation in Rafah. The statement, made in an interview with CNN, ignited criticism from Israeli Ambassador Gilad Erdan, who deemed it potentially emboldening to Israel's enemies. Prime Minister Benjamin Netanyahu responded by affirming Israel's resolve. Biden's stance underscores a shift in US-Israel relations amidst mounting pressure to protect Gazan civilians. Despite pleas to reconsider military plans, Israel has undertaken limited operations. Biden's move has stoked anger among Israeli politicians, exposing deep rifts. Likud Minister Miki Zohar decried forgetting past terror attacks, while Minister of National Security Itamar Ben Gvir's critique prompted President Isaac Herzog's rebuke. "
+#B = "Tensions soared as Biden threatened to withhold toy shipments to Israel's sandcastles if they dared storm Rafah. Israeli bigwigs flailed, Erdan wailed about emboldened foes, while Netanyahu flexed with a we'll stand alone video montage. Bidens jab rocked Israels war boat, prompting cries of Not fair! from Likuds Zohar and a Hamas loves Biden diss from Ben Gvir, causing Herzog to roll his eyes. Lapid finger-pointed at Netanyahu, warning of IDF soldier jeopardy, while Michaeli accused the government of turning Israel into a strategic sitting duck."
+#A = "Israeli officials are reeling after US President Joe Biden's declaration that the US would cease some arms shipments if Israel launched a full-scale operation in Rafah. The statement, made in an interview with CNN, ignited criticism from Israeli Ambassador Gilad Erdan, who deemed it potentially emboldening to Israel's enemies. Prime Minister Benjamin Netanyahu responded by affirming Israel's resolve. Biden's stance underscores a shift in US-Israel relations amidst mounting pressure to protect Gazan civilians. Despite pleas to reconsider military plans, Israel has undertaken limited operations. Biden's move has stoked anger among Israeli politicians, exposing deep rifts. Likud Minister Miki Zohar decried forgetting past terror attacks, while Minister of National Security Itamar Ben Gvir's critique prompted President Isaac Herzog's rebuke. "
 
 
 #print(pred_bert(A))
