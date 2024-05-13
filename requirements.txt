@@ -6,6 +6,5 @@ streamlit
 numpy
 scikit-learn
 tensorflow
-keras
 transformers
-Tokenizer
+
