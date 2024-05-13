@@ -42,8 +42,21 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 base_dir = 'model.h5'
+import joblib
+import os
+
+# Check if the file exists
 tokenizer_path = 'tokenizer.pkl'
-tok = joblib.load('tokenizer.pkl')
+if not os.path.exists(tokenizer_path):
+    raise FileNotFoundError(f"Tokenizer file not found at path: {tokenizer_path}")
+
+try:
+    # Load the tokenizer
+    tok = joblib.load(tokenizer_path)
+    print("Tokenizer loaded successfully.")
+except Exception as e:
+    print(f"An error occurred while loading the tokenizer: {e}")
+
 
 # Load the configuration
 config = json.load('config.json')
