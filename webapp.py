@@ -222,7 +222,7 @@ def pred_bert(text):
     return predicted_class
 
 #B = "Tensions soared as Biden threatened to withhold toy shipments to Israel's sandcastles if they dared storm Rafah. Israeli bigwigs flailed, Erdan wailed about emboldened foes, while Netanyahu flexed with a we'll stand alone video montage. Bidens jab rocked Israels war boat, prompting cries of Not fair! from Likuds Zohar and a Hamas loves Biden diss from Ben Gvir, causing Herzog to roll his eyes. Lapid finger-pointed at Netanyahu, warning of IDF soldier jeopardy, while Michaeli accused the government of turning Israel into a strategic sitting duck."
-#A = "Israeli officials are reeling after US President Joe Biden's declaration that the US would cease some arms shipments if Israel launched a full-scale operation in Rafah. The statement, made in an interview with CNN, ignited criticism from Israeli Ambassador Gilad Erdan, who deemed it potentially emboldening to Israel's enemies. Prime Minister Benjamin Netanyahu responded by affirming Israel's resolve. Biden's stance underscores a shift in US-Israel relations amidst mounting pressure to protect Gazan civilians. Despite pleas to reconsider military plans, Israel has undertaken limited operations. Biden's move has stoked anger among Israeli politicians, exposing deep rifts. Likud Minister Miki Zohar decried forgetting past terror attacks, while Minister of National Security Itamar Ben Gvir's critique prompted President Isaac Herzog's rebuke. "
+A = "Israeli officials are reeling after US President Joe Biden's declaration that the US would cease some arms shipments if Israel launched a full-scale operation in Rafah. The statement, made in an interview with CNN, ignited criticism from Israeli Ambassador Gilad Erdan, who deemed it potentially emboldening to Israel's enemies. Prime Minister Benjamin Netanyahu responded by affirming Israel's resolve. Biden's stance underscores a shift in US-Israel relations amidst mounting pressure to protect Gazan civilians. Despite pleas to reconsider military plans, Israel has undertaken limited operations. Biden's move has stoked anger among Israeli politicians, exposing deep rifts. Likud Minister Miki Zohar decried forgetting past terror attacks, while Minister of National Security Itamar Ben Gvir's critique prompted President Isaac Herzog's rebuke. "
 
 
 #print(pred_bert(A))
@@ -237,9 +237,11 @@ def predict_label(text, model_choice):
 
 if __name__ == '__main__':
     st.title("Fake news detection")
+    
     models = ['BERT']
     chosen_model = st.selectbox('Choose a model', models)
-    text = st.text_input('Enter text for prediction')
+    
+    text = st.text_area("Enter text for prediction", A)
 
     if st.button('Predict'):
         result = predict_label(text, chosen_model)
