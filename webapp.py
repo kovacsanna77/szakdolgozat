@@ -92,38 +92,40 @@ except Exception as e:
     print(f"An error occurred while loading the config: {e}")
 
 
-# Extract max_rev_len
-max_rev_len = config['max_rev_len']
-# Load the embedding matrix
-embed_matrix = np.load('embed_matrix.npy')
 
-# Load the model architecture
-with open('model.json', 'r') as json_file:
-    model_json = json_file.read()
-
-# Reconstruct the model
-vocab_size = embed_matrix.shape[0]
-embed_dim = embed_matrix.shape[1]
- # Define max_rev_len based on your data
-
-# Reconstruct the model
-model = Sequential()
-model.add(Embedding(input_dim=vocab_size, output_dim=embed_dim, input_length=max_rev_len, weights=[embed_matrix], trainable=True))
-model.add(Bidirectional(LSTM(64, dropout=0.2)))
-model.add(Dense(64, activation='relu'))
-model.add(Dropout(0.1))
-model.add(Dense(1, activation='sigmoid'))
-
-# Compile the model
-model.compile(optimizer=SGD(), loss=BinaryCrossentropy(), metrics=['accuracy'])
-
-# Load the model weights
-model.load_weights('model_weights.h5')
    
 #base_dir = 'model.h5'
 #model = load_model(base_dir, custom_objects=custom_objects)
 def pred_lstm(text):
-   
+       # Extract max_rev_len
+    max_rev_len = config['max_rev_len']
+    # Load the embedding matrix
+    embed_matrix = np.load('embed_matrix.npy')
+    
+    # Load the model architecture
+    with open('model.json', 'r') as json_file:
+        model_json = json_file.read()
+    
+    # Reconstruct the model
+    vocab_size = embed_matrix.shape[0]
+    embed_dim = embed_matrix.shape[1]
+    
+    
+    # Reconstruct the model
+    model=Sequential()
+    model.add(Embedding(input_dim=vocab_size, output_dim=embed_dim,
+                        input_length=max_rev_len, weights=[embed_matrix],
+                        trainable=True))
+    model.add(Bidirectional(LSTM(64, dropout = 0.2)))
+    model.add(Dense(64, activation = 'relu'))
+    model.add(Dropout(0.1))
+    model.add(Dense(1, activation='sigmoid'))
+    
+    # compile the model
+    model.compile(optimizer= SGD(), loss=BinaryCrossentropy(), metrics=['accuracy'])
+    
+    # Load the model weights
+    model.load_weights('model_weights.h5')
     sentences = tokenizer.tokenize(text.strip())
     cleaned_sentences = [clean_reviews(sent).split() for sent in sentences]
     sequences = tok.texts_to_sequences(cleaned_sentences)
@@ -235,7 +237,7 @@ def predict_label(text, model_choice):
 
 if __name__ == '__main__':
     st.title("Fake news detection")
-    models = ['BiLSTM', 'BERT']
+    models = ['BERT']
     chosen_model = st.selectbox('Choose a model', models)
     text = st.text_input('Enter text for prediction')
 
