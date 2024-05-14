@@ -1,0 +1,11 @@
+[server]
+runOnSave = true
+headless = true
+maxUploadSize = 200
+
+[browser]
+serverAddress = "localhost"
+serverPort = 8501
+
+[logger]
+level = "debug"
