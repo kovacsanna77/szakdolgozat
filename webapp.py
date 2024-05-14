@@ -245,6 +245,6 @@ if __name__ == '__main__':
 
     if st.button('Predict'):
         result = predict_label(text, chosen_model)
-        st.success(f"Prediction: {'True' if result == 1 else 'False'}")
+        st.success(f"Prediction: {'True' if result == 0 else 'False'}")
 
   
