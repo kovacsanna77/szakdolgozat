@@ -187,7 +187,7 @@ model2_path = 'saved_weights_lstm.pt' #os.path.join(save_directory, 'saved_weigh
 model_bert = BERT_LSTM_Arch(bert)  # Initialize the model with the same architecture
 
 # Load the model weights
-model_bert.load_state_dict(torch.load(model2_path))
+model_bert.load_state_dict(torch.load(model2_path, map_location=torch.device('cpu')))
 model_bert.eval()
 
 
